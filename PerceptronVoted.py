@@ -20,7 +20,7 @@ class PerceptronVoted(object):
         for e in range(epochs_t):
             c.append(0)
             for i in range(len(x)):
-                yNew = np.sign(np.dot(v[k], x[i]))
+                yNew = self.sign(np.dot(v[k], x[i]))
                 if yNew == y_label:
                     c[k] += 1
                 v.append(v[k] + np.dot(y[i], x[i]))
@@ -38,4 +38,22 @@ class PerceptronVoted(object):
         s = 0
         for i in range(self.k):
             s += self.c[self.k] * np.sign(np.dot(self.v[i], x_data))
-        return np.sign(s)
+        return self.sign(s)
+
+    """
+    def dot(self, x_arr, y_arr):
+        sum = 0
+        for i in range(len(x_arr)):
+            if not isinstance(x_arr[i], float) and not isinstance(x_arr[i], int):
+                break;
+            sum = sum + (x_arr[i] * y_arr[i])
+        return sum
+    """
+
+    def sign(self, x):
+        if x == 0:
+            return 0
+        if x > 1:
+            return 1
+        if x < 1:
+            return -1

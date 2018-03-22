@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.image as mpimg
 import os
 
 
@@ -14,6 +15,23 @@ class DatasetsFactory:
                      dtype=float)
         return x, y
 
-    def realisticDataset(path):
+    def realisticDataset(path1, path2):
+        x = []
+        y = []
+        x, y = DatasetsFactory.getImagesFromPath(path1, x, y, 1)
+        x, y = DatasetsFactory.getImagesFromPath(path2, x, y, -1)
+        return x, y
 
-        return [[1], [-1]], [1, -1]
+    def getImagesFromPath(path, x, y, y_label):
+        for root, dirs, files in os.walk(path):
+            for filename in files:
+                if filename.endswith('.png'):
+                    img = DatasetsFactory.getImageAsArray(path + "\\" + filename)
+                    x.append(img)
+                    y.append(y_label)
+        print(x[0])
+        return x, y
+
+    def getImageAsArray(path):
+        #TODO: load png as 1d array
+        return mpimg.imread(path)

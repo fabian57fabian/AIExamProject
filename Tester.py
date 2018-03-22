@@ -16,7 +16,8 @@ to_predict = [[66, 1], [345, 2], [222, 3], [1, 57], [3, 300], [8, 560]]
 test(x, y, 5, to_predict)
 
 print("\nrealistic Dataset")
-path = "myPath"
-to_predict = [[-1]]
-x, y = DatasetsFactory.realisticDataset(path)
-test(x, y, 5, to_predict)
+path1 = "C:\\Users\\Salimar\\Documents\\AI datasets\\devanagariHandwrittenCharacter\\Train\\character_1_ka"
+path2 = "C:\\Users\\Salimar\\Documents\\AI datasets\\devanagariHandwrittenCharacter\\Train\\character_3_ga"
+to_predict = DatasetsFactory.getImageAsArray("C:\\Users\\Salimar\\Documents\\AI datasets\\devanagariHandwrittenCharacter\\Test\\character_1_ka\\1416.png")
+x, y = DatasetsFactory.realisticDataset(path1, path2)
+test(x, y, 2, to_predict)

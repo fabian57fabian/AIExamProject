@@ -1,9 +1,12 @@
 from PerceptronVoted import PerceptronVoted
-from Perceptron import Perceptron
+from Perceptron1 import Perceptron1
 from DatasetsFactory import DatasetsFactory
 import datetime
+import matplotlib.pyplot as plt
+import time
 
 dataPath = "datasets"
+to_plot = False
 
 
 def abs(number):
@@ -15,8 +18,9 @@ def abs(number):
 
 
 def testData(x, y, ephocs, to_predict, labels):
+    plot_data(x, y)
     print("Train: ", len(x), "Test: ", len(to_predict), "Ephocs: ", ephocs)
-    myVoted = Perceptron()
+    myVoted = PerceptronVoted()
     myVoted.train(x, y, ephocs)
     err = 0
     i = len(to_predict)
@@ -25,9 +29,22 @@ def testData(x, y, ephocs, to_predict, labels):
         if abs(result - p) != 0:
             err += 1
         i -= 1
+        # print(i)
     errors = (err / len(to_predict) * 100)
     print("Accurancy: ", 100 - errors, "%", "Errors: ", errors, "%")
     return 100 - errors
+
+
+def plot_data(xx, yy):
+    if not to_plot:
+        return
+    for x, y in zip(xx, yy):
+        if y == 1:
+            plt.plot(x[0], x[1], 'ro')
+        else:
+            plt.plot(x[0], x[1], 'bo')
+    # plt.axis([0, 100, 0, 100])
+    plt.show()
 
 
 def simple_separable(ephocs, train, test):
@@ -83,25 +100,45 @@ def cmc(ephocs, train, test):
 
 tests = []
 datasets = []
-datasets.append(["simple_separable", simple_separable])
+# datasets.append(["simple_separable", simple_separable])
 # datasets.append(["diseased_trees", diseased_trees])
-# datasets.append(["iris", iris])
+datasets.append(["iris", iris])
 # datasets.append(["cmc", cmc])
 # datasets.append(["htru_2", htru_2])
 # datasets.append(["data_banknote", data_banknote])
 # datasets.append(["data_occupancy", data_occupancy])
+
+best = [0, 0, 0]
+
 for dataset in datasets:
     print("\nStarting with " + dataset[0])
-    for i in [1, 2, 3, 5, 7, 10]:
-        for j in [50, 80, 100, 120, 150, 200, 300, 400, 600]:
-            accurancy, test_len, train_len = dataset[1](i, j, 3000)
-            tests.append([i, test_len, train_len, accurancy])
+    for ephoc in range(13):
+        for train in [80]:
+            accurancy, test_len, train_len = dataset[1](ephoc, train, 3000)
+            tests.append([ephoc, test_len, train_len, accurancy])
+            if best[1] < accurancy:
+                best[0] = ephoc
+                best[1] = accurancy
+                best[2] = train_len
     # save data...
     now = datetime.datetime.now()
     resultPath = "results\\Log " + now.strftime("%Y-%m-%d %H %M %S") + ".data"
     with open(resultPath, "w+") as text_file:
         text_file.write("Dataset: " + dataset[0] + "\n")
         text_file.write("Ephocs, Test, Train, Result Accurancy")
+        plotdtx = []
+        plotdty = []
         for test in tests:
             print(str(test))
             text_file.write("\n" + str(test).replace("[", "").replace("]", ""))
+            plotdtx.append(test[0])
+            plotdty.append(100 - test[3])
+        plt.plot(plotdtx, plotdty, 'ob-')
+        plt.ylabel('Errors')
+        plt.xlabel('Ephocs')
+        plt.show()
+
+    # try with best to plot:
+    print("Best accurancy: ", best[1])
+    print("ephoc: ", best[0])
+    print("train N.: ", best[2])

@@ -1,10 +1,10 @@
 import numpy as np
 
 
-class Perceptron(object):
+class Perceptron1(object):
 
     def __init__(self, lr=1):
-        self.W = np.array([0])
+        self.W = 0
         self.lr = lr
         self.trained = False
 
@@ -14,7 +14,6 @@ class Perceptron(object):
     def predict(self, x):
         if not self.trained:
             return 0
-        x = np.insert(x, 0, 1)
         z = self.W.T.dot(x)
         a = self.activation_fn(z)
         return a
@@ -22,13 +21,16 @@ class Perceptron(object):
     def get_weights(self):
         return self.W
 
-    def train(self, X, y, epochs_t=1):
-        W = np.zeros(len(X[0]) + 1)
+    def train(self, X, y, epochs_t=0.1):
+        self.W = np.zeros(len(X[0]))
+        print(len(X[0]))
         for _ in range(epochs_t):
             for i in range(len(y)):
-                x_curr = np.insert(X[i], 0, 1)
-                y_new = self.predict(x_curr)
+                x = X[i]
+                y_new = self.predict(x)
                 e = y[i] - y_new
-                W = W + self.lr * e * x_curr
-        self.W = W
+                b = self.lr * e * x
+                if b != []:
+                    self.W += b
+        print(self.W)
         self.trained = True

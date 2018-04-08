@@ -244,64 +244,6 @@ class DatasetsFactory:
         return x, y
 
     @staticmethod
-    def get_shuttle(path):
-        x = []
-        y = []
-        with open(path, 'r') as file:
-            reader = csv.reader(file, delimiter=' ')
-            for row in reader:
-                if row[9] == '4' or row[9] == '1':
-                    if row[9] == '1':
-                        y.append(1)
-                    else:
-                        y.append(-1)
-                    row.pop(9)
-                    row.pop(0)
-                    row = np.array(row, dtype=float)
-                    x.append(row)
-        return x, y
-
-    @staticmethod
-    def getMovement_AAL(pathFolder, testing):
-        x = []
-        y = []
-        x1 = []
-        y1 = []
-        sequences = []
-        labels = []
-        path_target = pathFolder + "\\MovementAAL_target.csv"
-        with open(path_target, 'r') as file:
-            reader = csv.reader(file, delimiter=',')
-            first = True
-            for row in reader:
-                if not first:
-                    sequences.append(row[0])
-                    labels.append(row[1])
-                else:
-                    first = False
-        to_training = False
-        for i in range(len(sequences)):
-            if i >= 289:
-                to_training = True
-            path_target = pathFolder + "\\MovementAAL_RSS_" + sequences[i] + ".csv"
-            with open(path_target, 'r') as file:
-                reader = csv.reader(file, delimiter=',')
-                first = True
-                for row in reader:
-                    if not first:
-                        if not to_training:
-                            y.append(int(labels[i]))
-                            row = np.array(row, dtype=float)
-                            x.append(row)
-                        else:
-                            y1.append(int(labels[i]))
-                            row = np.array(row, dtype=float)
-                            x1.append(row)
-                    else:
-                        first = False
-        return x, y, x1, y1
-
-    @staticmethod
     def generate_random_simple_points():
         path = "datasets\\simple_points\\simple_points.data"
         with open(path, "w+") as text_file:

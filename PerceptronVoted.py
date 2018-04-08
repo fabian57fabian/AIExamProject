@@ -1,13 +1,15 @@
 import numpy as np
+from PerceptronAbstract import PerceptronAbstract
 
 
-class PerceptronVoted(object):
+class PerceptronVoted(PerceptronAbstract):
     v = []
     c = []
     k = 0
     trained = False
 
     def __init__(self):
+        super().__init__()
         self.v = []
         self.c = []
         self.trained = False

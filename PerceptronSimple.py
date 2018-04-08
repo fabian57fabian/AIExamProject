@@ -1,9 +1,11 @@
 import numpy as np
+from PerceptronAbstract import PerceptronAbstract
 
 
-class Perceptron1(object):
+class PerceptronSimple(PerceptronAbstract):
 
     def __init__(self, lr=1):
+        super().__init__()
         self.W = 0
         self.lr = lr
         self.trained = False

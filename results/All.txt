@@ -1,0 +1,16 @@
+All datasets best results:
+Perceptron type, name, Ephocs, Test, Train, Accurancy, Time
+PerceptronSimple,simple_separable,1,50,2000,100.0,0.0
+PerceptronSimple,diseased_trees,20,200,1074,73.18435754189944,0.015608072280883789
+PerceptronSimple,iris,5,50,150,100.0,0.0
+PerceptronSimple,cmc,1,50,962,34.61538461538461,0.0
+PerceptronSimple,htru_2,10,50,2000,72.75,0.015628337860107422
+PerceptronSimple,data_banknote,7,80,1372,99.27113702623906,0.0
+PerceptronSimple,data_occupancy,1,50,2000,61.199999999999996,0.0
+PerceptronVoted,simple_separable,3,50,2000,100.0,0.7812612056732178
+PerceptronVoted,diseased_trees,1,50,1074,93.10986964618249,0.15562939643859863
+PerceptronVoted,iris,5,50,150,100.0,0.10709309577941895
+PerceptronVoted,cmc,1,50,962,65.38461538461539,0.14258289337158203
+PerceptronVoted,htru_2,20,50,2000,71.55000000000001,5.699615955352783
+PerceptronVoted,data_banknote,15,200,1372,69.24198250728863,10.687657356262207
+PerceptronVoted,data_occupancy,1,50,2000,50.0,0.26562929153442383

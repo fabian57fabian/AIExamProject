@@ -38,7 +38,7 @@ class DatasetsFactory:
                     x_row = []  # create an array with age
                     for i in range(0, 4):
                         x_row.append(float(row[i]))
-                    x.append(x_row)
+                    x.append(np.array(x_row, dtype=float))
                     y.append(curr_y)
         return x, y
 
@@ -73,7 +73,7 @@ class DatasetsFactory:
                     x_row = []  # create an array with age
                     for i in range(0, 9):
                         x_row.append(float(row[i]))
-                    x.append(x_row)
+                    x.append(np.array(x_row, dtype=float))
                     y.append(curr_y)
         return x, y
 
@@ -106,7 +106,7 @@ class DatasetsFactory:
                     x_row = []  # create an array with age
                     for i in range(0, 4):
                         x_row.append(float(row[i]))
-                    x.append(x_row)
+                    x.append(np.array(x_row, dtype=float))
                     y.append(curr_y)
         return x, y
 
@@ -139,7 +139,7 @@ class DatasetsFactory:
                     x_row = []  # create an array with age
                     for i in range(0, 8):
                         x_row.append(float(row[i]))
-                    x.append(x_row)
+                    x.append(np.array(x_row, dtype=float))
                     y.append(curr_y)
         return x, y
 
@@ -173,7 +173,7 @@ class DatasetsFactory:
                     x_row = []  # create an array with age
                     for i in range(2, 7):  # skip date and number
                         x_row.append(float(row[i]))
-                    x.append(x_row)
+                    x.append(np.array(x_row, dtype=float))
                     y.append(curr_y)
         return x, y
 

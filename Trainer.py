@@ -9,7 +9,7 @@ import numpy as np
 # SETTINGS vars
 dataPath = "datasets"
 to_plot = True
-plot_n = 331
+plot_n = 341
 use_voted = False
 epochs = [1, 3, 4, 7, 10, 14, 18, 20, 25, 30, 50, 70, 90, 100]
 train_n = 500
@@ -27,8 +27,8 @@ def main():
     for dataset in datasets:
         use_voted = False
         train_dataset(dataset)
-        use_voted = True
-        train_dataset(dataset)
+        #use_voted = True
+        #train_dataset(dataset)
     save_accurancies_testing()
     plot_data(accuracies)
 

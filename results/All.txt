@@ -1,0 +1,6 @@
+Name, Type, ephoc, Validation accuracy, Testing accuracy]
+simple_separable,PerceptronSimple,1,100.0,100.0
+diseased_trees,PerceptronSimple,1,94.4,94.66006772597031
+htru_2,PerceptronSimple,25,97.6,97.42573085572258
+data_banknote,PerceptronSimple,1,99.0,97.58064516129032
+data_occupancy,PerceptronSimple,90,97.8,96.95146818923328

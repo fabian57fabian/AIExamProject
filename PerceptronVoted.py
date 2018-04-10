@@ -8,46 +8,34 @@ class PerceptronVoted(PerceptronAbstract):
     k = 0
     trained = False
 
-    def __init__(self):
+    def __init__(self, R):
         super().__init__()
-        self.v = []
-        self.c = []
-        self.trained = False
-
-    def train(self, x, y, epochs_t=1):
-        y_label = 1
-        k = 0
-        c = []
-        v = [np.zeros(len(x[0]))]
-        yNew = 0
-        for e in range(epochs_t):
-            c.append(0)
-            for i in range(len(x)):
-                result = np.dot(v[k], x[i])
-                yNew = self.sign(result)
-                if yNew == y_label:
-                    c[k] += 1
-                v.append(v[k] + np.dot(y[i], x[i]))
-                c.append(1)
-                k += 1
-        self.trained = True
-        self.c = c
-        self.v = v
-        self.k = k
-        return v, c
+        self.v = [np.zeros(R)]
+        self.c = [0]
+        self.k = 0
+        self.R = R
 
     def predict(self, x_data):
-        if not self.trained:
-            return 0
         s = 0
-        for i in range(self.k):
-            s += self.c[self.k] * np.sign(np.dot(self.v[i], x_data))
-        return self.sign(s)
+        for i in range(self.k + 1):
+            s += self.c[i] * np.sign(np.dot(self.v[i], x_data))
+        return np.sign(s)
 
-    def sign(self, x):
-        if x == 0:
-            return 0
-        if x > 0:
-            return 1
-        if x < 0:
-            return -1
+    def get_weights(self):
+        return self.v
+
+    def train(self, data, epochs_t=1):
+        y_label = 1
+        self.v = [np.zeros(self.R)]
+        self.c = [0]
+        self.k = 0
+        for e in range(epochs_t):
+            for x, y in data:
+                s = np.dot(self.v[self.k], x)
+                if y_label == np.sign(s):
+                    self.c[self.k] += 1
+                else:
+                    self.v.append(self.v[self.k] + y * x)
+                    self.c.append(1)
+                    self.k += 1
+        return self.v, self.c

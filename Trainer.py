@@ -1,180 +1,150 @@
 from PerceptronVoted import PerceptronVoted
 from PerceptronSimple import PerceptronSimple
 from DatasetsFactory import DatasetsFactory
-import datetime
 import matplotlib.pyplot as plt
 import time
+import random
+import numpy as np
 
 # SETTINGS vars
 dataPath = "datasets"
-to_plot = False
+to_plot = True
+plot_n = 331
 use_voted = False
-ephocs_train = [1, 3, 5, 7, 10, 15, 20]
-train_vector = [50, 80, 100, 150, 200, 300]
-test = 2000  # max testing number (many datasets could have <2000 data)
-best_train_settings = []
+epochs = [1, 3, 4, 7, 10, 14, 18, 20, 25, 30, 50, 70, 90, 100]
+train_n = 500
+validation_n = 500
+accuracies = []
 
 
 def main():
+    if to_plot:
+        plt.figure(1)
     global use_voted
-    use_voted = False
-    train_all()
-    use_voted = True
-    train_all()
-    save_best_settings()
+    datasets = load_datasets_info()
+    sets = []
+    sets.append(datasets[0])
+    for dataset in datasets:
+        use_voted = False
+        train_dataset(dataset)
+        use_voted = True
+        train_dataset(dataset)
+    save_accurancies_testing()
+    plot_data(accuracies)
 
 
-def save_best_settings():
+def save_accurancies_testing():
     path = "results\\All.txt"
     with open(path, "w+") as text_file:
-        text_file.write("All datasets best results:")
-        text_file.write("\nPerceptron type, name, Ephocs, Test, Train, Accurancy, Time")
-        for best in best_train_settings:
-            text_file.write(
-                "\n" + str(best['type']) + "," + str(best['name']) + "," +
-                str(best['ephoc']) + "," + str(best['test_len']) + "," + str(best['train_len']) + "," + str(
-                    best['accurancy']) + "," + str(best['time']))
+        text_file.write("Name, Type, ephoc, Validation accuracy, Testing accuracy]")
+        for acc in accuracies:
+            text_file.write("\n" + acc[0] + ',' + acc[1] + ',' + str(acc[2]) + ',' + str(acc[3]) + ',' + str(acc[4]))
 
 
-def train_all():
-    for dataset in load_datasets_info():
-        best = {'ephoc': 0, 'accurancy': 0, 'train_len': 0, 'test_len': 0, 'time': 0, 'type': '', 'name': ''}
-        tests = []
-        print("\nTraining " + dataset['name'])
-        for ephoc in ephocs_train:
-            for train in train_vector:
-                to_predict, labels = dataset['data_train'](dataPath + dataset['train_path'], test / 2, test / 2)
-                x, y = dataset['data_test'](dataPath + dataset['test_path'], train / 2, train / 2)
-                test_len = len(x)
-                train_len = len(to_predict)
-                start = time.time()
-                accurancy = testData(x, y, ephoc, to_predict, labels)
-                elapsed = time.time() - start
-                tests.append([ephoc, test_len, train_len, accurancy, elapsed])
-                if best['accurancy'] < accurancy:
-                    best = {'ephoc': ephoc, 'accurancy': accurancy, 'train_len': train_len, 'test_len': test_len,
-                            'time': elapsed, 'type': get_perceptron_type_str(), 'name': dataset['name']}
-        save_results(tests, dataset, best)
-        global best_train_settings
-        best_train_settings.append(best)
-        if to_plot:
-            plot_data(tests)
-        print("Best accurancy: ", best['accurancy'])
-        print("ephoc: ", best['ephoc'])
-        print("train N.: ", best['train_len'])
+def train_dataset(dataset):
+    tests = []
+    print("\nTraining " + dataset['name'] + " with " + get_perceptron_type_str())
+    data = dataset['data'](dataPath + dataset['data_path'])
+    R = len(data[0][0])
+    random.Random(4).shuffle(data)
+    train_data = data[0:train_n]
+    validation_data = data[train_n: train_n + validation_n]
+    best_a = 0
+    best_e = 0
+    best_perc = 0
+    for epoch in epochs:
+        my_perceptron = get_perceptron(R)  # create perceptron
+        start = time.time()
+        my_perceptron.train(train_data, epoch)  # train perceptron
+        accuracy_validation = test_with(my_perceptron, validation_data)  # validate perceptron
+        elapsed = time.time() - start
+        tests.append([epoch, accuracy_validation, elapsed])
+        print(tests[-1])
+        if best_a < accuracy_validation:
+            best_a = accuracy_validation
+            best_e = epoch
+            best_perc = my_perceptron
+    test_data = data[train_n * 2:max(len(data), 2000)]
+    accuracy_test = test_with(best_perc, test_data)
+    subplot(tests, dataset['name'], get_perceptron_type_str())
+    save_results(tests, dataset, accuracy_test, train_n, validation_n, len(test_data))
+    global accuracies
+    accuracies.append([dataset['name'], get_perceptron_type_str(), best_e, best_a, accuracy_test])
+
+
+def subplot(tests, name, perc_type):
+    if to_plot:
+        global plot_n
+        plt.subplot(plot_n)
+        plot_n += 1
+        plt.plot(np.array(tests, dtype=int)[:, 0], np.array(tests)[:, 1], 'o-', label=perc_type + ' ' + name)
+        plt.ylabel('Accurancy')
+        plt.xlabel('Ephocs')
+        plt.title(name)
+        plt.grid(True)
+        plt.gca().set_ylim([0, 110])
 
 
 def get_perceptron_type_str():
-    global use_voted
     if use_voted:
         return 'PerceptronVoted'
     else:
         return 'PerceptronSimple'
 
 
-def get_perceptron():
+def get_perceptron(R):
     if use_voted:
-        return PerceptronVoted()
+        return PerceptronVoted(R)
     else:
-        return PerceptronSimple()
+        return PerceptronSimple(R)
 
 
-def abs(number):
-    if number == 0:
-        return number
-    if number < 0:
-        return number * -1
-    return number
-
-
-def testData(x, y, ephocs, to_predict, labels):
-    if len(y) != len(x):
-        print("Dataset error: having {0} x and {1} y".format(len(x), len(y)))
-        return -1
-    print("Train: ", len(x), "Test: ", len(to_predict), "Ephocs: ", ephocs)
-    my_perceptron = get_perceptron()
-    my_perceptron.train(x, y, ephocs)
+def test_with(my_perceptron, data):
     err = 0
-    i = len(to_predict)
-    for d, p in zip(to_predict, labels):
+    i = len(data)
+    for d, p in data:
         result = my_perceptron.predict(d)
         if abs(result - p) != 0:
             err += 1
         i -= 1
-        # print(i)
-    errors = (err / len(to_predict) * 100)
-    print("Accurancy: ", 100 - errors, "%")
-    return 100 - errors
+    accurancy = 100 - (err / len(data) * 100)
+    return accurancy
 
 
-def plot_data(tests):
-    plotdtx = []
-    plotdty = []
-    for test in tests:
-        plotdtx.append(test[0])
-        plotdty.append(test[3])
-    plt.plot(plotdtx, plotdty, 'ob-')
-    plt.ylabel('Errors')
-    plt.xlabel('Ephocs')
-    plt.show()
+def plot_data(accuracies):
+    if to_plot:
+        plt.subplots_adjust(hspace=0.5, wspace=0.5)
+        plt.show()
 
 
-def save_results(tests, dataset, best):
-    if use_voted:
-        path = "results\\" + "PerceptronVoted " + dataset['name'] + ".data"
-    else:
-        path = "results\\" + "PerceptronSimple " + dataset['name'] + ".data"
+def save_results(tests, dataset, accurancy_test, train_n, validation_n, test_n):
+    path = "results\\" + get_perceptron_type_str() + dataset['name'] + ".data"
     with open(path, "w+") as text_file:
-        text_file.write("Dataset: " + dataset['name'] + "")
-        text_file.write("\nAlgorithm used: " + "PerceptronVoted" if use_voted else "PerceptronSimple")
-        text_file.write("\nEphocs, Test, Train, Accurancy, Time")
+        text_file.write(
+            dataset['name'] + ", " + get_perceptron_type_str() + " [Train=" + str(train_n) + ", Validation=" + str(
+                validation_n) + "]")
+        text_file.write("\nEphocs, Accurancy, Time")
         for test in tests:
-            print(str(test))
             text_file.write("\n" + str(test).replace("[", "").replace("]", ""))
-        text_file.write("\n\nBest:\n")
-        text_file.write("Ephocs, Test, Train, Accurancy, Time\n")
-        text_file.write(str(best['ephoc']) + "," + str(best['test_len']) + "," + str(best['train_len']) + "," + str(
-            best['train_len']) + "," + str(best['time']))
 
 
 def load_datasets_info():
     datasets = []
-
     datasets.append({'name': 'simple_separable',
-                     'data_train': DatasetsFactory.simple_points,
-                     'data_test': DatasetsFactory.simple_points,
-                     'train_path': '\\simple_points\\simple_points.data',
-                     'test_path': '\\simple_points\\simple_points.data'})
+                     'data': DatasetsFactory.simple_points,
+                     'data_path': '\\simple_points\\simple_points.data'})
     datasets.append({'name': 'diseased_trees',
-                     'data_train': DatasetsFactory.diseasedTrees,
-                     'data_test': DatasetsFactory.diseasedTrees,
-                     'train_path': '\\wilt\\training.csv',
-                     'test_path': '\\wilt\\testing.csv'})
-    datasets.append({'name': 'iris',
-                     'data_train': DatasetsFactory.iris,
-                     'data_test': DatasetsFactory.iris,
-                     'train_path': '\\iris\\iris.data',
-                     'test_path': '\\iris\\iris.data'})
-    datasets.append({'name': 'cmc',
-                     'data_train': DatasetsFactory.cmc,
-                     'data_test': DatasetsFactory.cmc,
-                     'train_path': '\\cmc\\cmc.data',
-                     'test_path': '\\cmc\\cmc.data'})
+                     'data': DatasetsFactory.diseasedTrees,
+                     'data_path': '\\wilt\\testing.csv'})
     datasets.append({'name': 'htru_2',
-                     'data_train': DatasetsFactory.htru_2,
-                     'data_test': DatasetsFactory.htru_2,
-                     'train_path': '\\htru_2\\HTRU_2.arff',
-                     'test_path': '\\htru_2\\HTRU_2.arff'})
+                     'data': DatasetsFactory.htru_2,
+                     'data_path': '\\htru_2\\HTRU_2.arff'})
     datasets.append({'name': 'data_banknote',
-                     'data_train': DatasetsFactory.data_banknote,
-                     'data_test': DatasetsFactory.data_banknote,
-                     'train_path': '\\banknote_authentication\\data_banknote_authentication.txt',
-                     'test_path': '\\banknote_authentication\\data_banknote_authentication.txt'})
+                     'data': DatasetsFactory.data_banknote,
+                     'data_path': '\\banknote_authentication\\data_banknote_authentication.txt'})
     datasets.append({'name': 'data_occupancy',
-                     'data_train': DatasetsFactory.data_occupancy,
-                     'data_test': DatasetsFactory.data_occupancy,
-                     'train_path': '\\occupancy_data\\datatraining.txt',
-                     'test_path': '\\occupancy_data\\datatest.txt'})
+                     'data': DatasetsFactory.data_occupancy,
+                     'data_path': '\\occupancy_data\\datatest.txt'})
     return datasets
 
 

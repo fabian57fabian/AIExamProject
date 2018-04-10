@@ -5,40 +5,26 @@ from numpy import dot
 
 class PerceptronSimple(PerceptronAbstract):
 
-    def __init__(self, lr=1):
+    def __init__(self, R):
         super().__init__()
-        self.w = np.array(0)
-        self.b = np.array(0)
-        self.lr = lr
-        self.trained = False
+        self.R = R
+        self.w = np.zeros(R)
+        self.b = 0
 
     def predict(self, x):
-        if not self.trained:
-            return 0
         z = dot(self.w, x) + self.b
-        return self.sign(z)
+        return np.sign(z)
 
     def get_weights(self):
         return self.w
 
-    def train(self, X, Y, epochs_t=1):
-        R = len(X[0])
-        self.w = np.zeros(R)
-        self.b = k = 0
-        for _ in range(epochs_t):
+    def train(self, data, epochs_t=1):
+        self.w = np.zeros(self.R)
+        self.b = 0
+        for e in range(epochs_t):
             n_err = 0
-            for x, y in zip(X, Y):
+            for x, y in data:
                 if y * (dot(self.w, x) + self.b) <= 0:
                     self.w += y * x
-                    self.b += y * R * R
-                    k += 1
+                    self.b += y * self.R * self.R
                     n_err += 1
-        self.trained = True
-
-    def sign(self, x):
-        if x == 0:
-            return 0
-        if x > 0:
-            return 1
-        if x < 0:
-            return -1

@@ -6,7 +6,11 @@ class PerceptronAbstract(ABC):
         pass
 
     @abstractmethod
-    def train(self, x, y, ephocs=1):
+    def get_weights(self):
+        pass
+
+    @abstractmethod
+    def train(self, data, ephocs=1):
         pass
 
     @abstractmethod

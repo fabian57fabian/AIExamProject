@@ -9,7 +9,7 @@ import numpy as np
 # SETTINGS vars
 dataPath = "datasets"
 to_plot = True
-plot_n = 341
+plot_n = [4, 4, 1]
 use_voted = False
 epochs = [1, 3, 4, 7, 10, 14, 18, 20, 25, 30, 50, 70, 90, 100]
 train_n = 500
@@ -18,8 +18,6 @@ accuracies = []
 
 
 def main():
-    if to_plot:
-        plt.figure(1)
     global use_voted
     datasets = load_datasets_info()
     sets = []
@@ -27,8 +25,8 @@ def main():
     for dataset in datasets:
         use_voted = False
         train_dataset(dataset)
-        #use_voted = True
-        #train_dataset(dataset)
+        use_voted = True
+        train_dataset(dataset)
     save_accurancies_testing()
     plot_data(accuracies)
 
@@ -66,23 +64,9 @@ def train_dataset(dataset):
             best_perc = my_perceptron
     test_data = data[train_n * 2:max(len(data), 2000)]
     accuracy_test = test_with(best_perc, test_data)
-    subplot(tests, dataset['name'], get_perceptron_type_str())
     save_results(tests, dataset, accuracy_test, train_n, validation_n, len(test_data))
     global accuracies
     accuracies.append([dataset['name'], get_perceptron_type_str(), best_e, best_a, accuracy_test])
-
-
-def subplot(tests, name, perc_type):
-    if to_plot:
-        global plot_n
-        plt.subplot(plot_n)
-        plot_n += 1
-        plt.plot(np.array(tests, dtype=int)[:, 0], np.array(tests)[:, 1], 'o-', label=perc_type + ' ' + name)
-        plt.ylabel('Accurancy')
-        plt.xlabel('Ephocs')
-        plt.title(name)
-        plt.grid(True)
-        plt.gca().set_ylim([0, 110])
 
 
 def get_perceptron_type_str():
@@ -118,12 +102,12 @@ def plot_data(accuracies):
 
 
 def save_results(tests, dataset, accurancy_test, train_n, validation_n, test_n):
-    path = "results\\" + get_perceptron_type_str() + dataset['name'] + ".data"
+    path = "results\\" + get_perceptron_type_str() + ' ' + dataset['name'] + ".data"
     with open(path, "w+") as text_file:
         text_file.write(
-            dataset['name'] + ", " + get_perceptron_type_str() + " [Train=" + str(train_n) + ", Validation=" + str(
+            dataset['name'] + "," + get_perceptron_type_str() + ",[Train=" + str(train_n) + ",Validation=" + str(
                 validation_n) + "]")
-        text_file.write("\nEphocs, Accurancy, Time")
+        text_file.write("\nEphocs, Accurancy val, Time")
         for test in tests:
             text_file.write("\n" + str(test).replace("[", "").replace("]", ""))
 

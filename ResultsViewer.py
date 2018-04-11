@@ -1,18 +1,13 @@
-from PerceptronVoted import PerceptronVoted
-from PerceptronSimple import PerceptronSimple
-from DatasetsFactory import DatasetsFactory
-import datetime
-# https://plot.ly/matplotlib/bar-charts/
 import matplotlib.pyplot as plt
-import time
 import numpy as np
 import csv
+from os import listdir
 
 data = []
 names = []
 
 
-def plot_histogram(results):
+def plot_histogram_bests(results):
     plt.ylabel("datasets")
     plt.xlabel("results")
     plt.title("Datasets accurancy")
@@ -49,9 +44,57 @@ def import_results():
     return np.array(results)
 
 
+def import_tests():
+    data = []
+    data.append({'datasetname': 'simple_separable', 'PV_tests': [], 'P_tests': []})
+    data.append({'datasetname': 'diseased_trees', 'PV_tests': [], 'P_tests': []})
+    data.append({'datasetname': 'htru_2', 'PV_tests': [], 'P_tests': []})
+    data.append({'datasetname': 'data_banknote', 'PV_tests': [], 'P_tests': []})
+    data.append({'datasetname': 'data_occupancy', 'PV_tests': [], 'P_tests': []})
+    path = "results\\"
+    for _file in listdir(path):
+        if _file != "All.txt":
+            with open(path + _file, 'r') as file:
+                iter_bank = iter(csv.reader(file, delimiter=','))
+                header = next(iter_bank)
+                print(header)
+                next(iter_bank)
+                tests = []
+                for row in iter_bank:
+                    tests.append(np.array(row, dtype=float))
+                for d in data:
+                    if d['datasetname'] == header[0].strip():
+                        attribute = 'P_tests' if header[1].strip() == 'PerceptronSimple' else 'PV_tests'
+                        d[attribute] = tests
+                        break
+    return data
+
+
+def plot_data(data):
+    plt.figure(1)
+    i = 1
+    for d in data:
+        plt.subplot(2, 3, i)
+        i += 1
+        PV_data = np.array(d['PV_tests'])
+        P_data = np.array(d['P_tests'])
+        plt.plot(np.array(PV_data)[:, 0], np.array(PV_data)[:, 1], 'o-', label="Perceptron Voted")
+        plt.plot(np.array(P_data)[:, 0], np.array(P_data)[:, 1], 'o-', label="Perceptron")
+        plt.legend(loc=4)
+        plt.ylabel('Val Accurancy')
+        plt.xlabel('Ephocs')
+        plt.title(d['datasetname'], )
+        plt.grid(True)
+        plt.gca().set_ylim([0, 110])
+    plt.subplots_adjust(left=0.05, right=0.99, hspace=0.30, top=0.95, bottom=0.07)
+    plt.show()
+
+
 def main():
-    results = import_results()
-    plot_histogram(results)
+    # results = import_results()
+    # plot_histogram_bests(results)
+    data = import_tests()
+    plot_data(data)
 
 
 if __name__ == "__main__":

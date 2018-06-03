@@ -1,0 +1,3 @@
+data_banknote,Perceptron,[Train=500,Validation=250]
+Ephocs, Accurancy val, Time
+20, 92.4, 0.017968177795410156

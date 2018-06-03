@@ -1,0 +1,3 @@
+htru_2,PerceptronVoted,[Train=500,Validation=250]
+Ephocs, Accurancy val, Time
+20, 97.2, 0.32140254974365234

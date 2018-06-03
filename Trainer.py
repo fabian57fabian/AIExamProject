@@ -44,7 +44,7 @@ def main():
 def save_accurancies_testing():
     path = "results\\All.txt"
     with open(path, "w+") as text_file:
-        text_file.write("Name, Type, ephoc, Validation accuracy, Testing accuracy]")
+        text_file.write("Name, Type, ephoc, [Validation accuracy, Testing accuracy]")
         for acc in accuracies:
             text_file.write("\n" + acc[0] + ',' + acc[1] + ',' + str(acc[2]) + ',' + str(acc[3]) + ',' + str(acc[4]))
 

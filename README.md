@@ -9,4 +9,4 @@ Assignment asks to execute PerceptronVoted on 3 datasets:
 -one lineary separable
 -two not lineary separable
 All 3 datasets have to have more at least 1000 instances.
-For this program i choosed 7 different datasets where only iris is really lineary separable
+For this program i chosed 7 different datasets where only iris is really lineary separable

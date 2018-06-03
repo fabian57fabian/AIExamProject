@@ -1,4 +1,5 @@
-from PerceptronVoted import PerceptronVoted
+from PerceptronVoted import PerceptronVoted as PerceptronVoted2
+from PerceptronVotedWithBias import PerceptronVotedWithBias as PerceptronVoted
 from PerceptronSimple import PerceptronSimple
 from DatasetsFactory import DatasetsFactory
 from ResultsViewer import main as plotAll
@@ -16,7 +17,7 @@ accuracies = []
 
 perceptron_types = []
 perceptron_types.append({'number': 1, 'name': 'Perceptron', 'class': PerceptronSimple})
-perceptron_types.append({'number': 3, 'name': 'PerceptronVoted', 'class': PerceptronVoted})
+perceptron_types.append({'number': 3, 'name': 'PerceptronVotedWithBias', 'class': PerceptronVoted})
 
 
 def printTime(elapsedTOTAL):
@@ -107,9 +108,6 @@ def load_datasets_info():
     datasets.append({'name': 'simple_separable',
                      'data': DatasetsFactory.simple_points,
                      'data_path': '\\simple_points\\simple_points.data'})
-    # datasets.append({'name': 'diseased_trees',
-    #                 'data': DatasetsFactory.diseasedTrees,
-    #                 'data_path': '\\wilt\\testing.csv'})
     datasets.append({'name': 'htru_2',
                      'data': DatasetsFactory.htru_2,
                      'data_path': '\\htru_2\\HTRU_2.arff'})

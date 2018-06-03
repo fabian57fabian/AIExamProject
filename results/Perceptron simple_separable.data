@@ -1,3 +1,3 @@
 simple_separable,Perceptron,[Train=500,Validation=250]
 Ephocs, Accurancy val, Time
-20, 100.0, 0.017485380172729492
+20, 100.0, 0.017966270446777344

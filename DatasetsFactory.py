@@ -63,20 +63,6 @@ class DatasetsFactory:
         return dataset
 
     @staticmethod
-    def diseasedTrees(path):
-        dataset = []
-        with open(path, 'r') as file:
-            iter_bank = iter(csv.reader(file, delimiter=','))
-            next(iter_bank)  # skip first row
-            for row in iter_bank:
-                y = 1
-                if row[0] == 'n':
-                    y = -1
-                x = np.array(row[1:6], dtype=float)
-                dataset.append([x, y])
-        return dataset
-
-    @staticmethod
     def generate_random_simple_points():
         path = "datasets\\simple_points\\simple_points.data"
         with open(path, "w+") as text_file:

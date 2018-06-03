@@ -25,7 +25,6 @@ class PerceptronVoted(PerceptronAbstract):
         return self.v
 
     def train(self, data, epochs_t=1):
-        y_label = 1
         self.v = [np.zeros(self.attr_number)]
         self.c = [0]
         c = 1

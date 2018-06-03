@@ -9,7 +9,6 @@ import numpy as np
 
 # SETTINGS vars
 dataPath = "datasets"
-plot_n = [4, 4, 1]
 epochs = [20]
 train_n = 500
 test_n = 500
@@ -17,7 +16,24 @@ accuracies = []
 
 perceptron_types = []
 perceptron_types.append({'number': 1, 'name': 'Perceptron', 'class': PerceptronSimple})
-perceptron_types.append({'number': 3, 'name': 'PerceptronVotedWithBias', 'class': PerceptronVoted})
+perceptron_types.append({'number': 3, 'name': 'PerceptronVoted', 'class': PerceptronVoted})
+
+
+def load_datasets_info():
+    datasets = []
+    datasets.append({'name': 'simple_separable',
+                     'data': DatasetsFactory.simple_points,
+                     'data_path': '\\simple_points\\simple_points.data'})
+    datasets.append({'name': 'htru_2',
+                     'data': DatasetsFactory.htru_2,
+                     'data_path': '\\htru_2\\HTRU_2.arff'})
+    datasets.append({'name': 'data_banknote',
+                     'data': DatasetsFactory.data_banknote,
+                     'data_path': '\\banknote_authentication\\data_banknote_authentication.txt'})
+    datasets.append({'name': 'data_occupancy',
+                     'data': DatasetsFactory.data_occupancy,
+                     'data_path': '\\occupancy_data\\datatest.txt'})
+    return datasets
 
 
 def printTime(elapsedTOTAL):
@@ -101,23 +117,6 @@ def save_results(tests, dataset, train_n, validation_n, test_n, name):
         text_file.write("\nEphocs, Accurancy val, Time")
         for test in tests:
             text_file.write("\n" + str(test).replace("[", "").replace("]", ""))
-
-
-def load_datasets_info():
-    datasets = []
-    datasets.append({'name': 'simple_separable',
-                     'data': DatasetsFactory.simple_points,
-                     'data_path': '\\simple_points\\simple_points.data'})
-    datasets.append({'name': 'htru_2',
-                     'data': DatasetsFactory.htru_2,
-                     'data_path': '\\htru_2\\HTRU_2.arff'})
-    datasets.append({'name': 'data_banknote',
-                     'data': DatasetsFactory.data_banknote,
-                     'data_path': '\\banknote_authentication\\data_banknote_authentication.txt'})
-    datasets.append({'name': 'data_occupancy',
-                     'data': DatasetsFactory.data_occupancy,
-                     'data_path': '\\occupancy_data\\datatest.txt'})
-    return datasets
 
 
 if __name__ == "__main__":

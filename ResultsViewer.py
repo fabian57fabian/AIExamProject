@@ -3,7 +3,13 @@ import numpy as np
 import csv
 from os import listdir
 
+#if new dataset added, please append dataset's info in data array
+
 data = []
+data.append({'datasetname': 'simple_separable', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
+data.append({'datasetname': 'htru_2', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
+data.append({'datasetname': 'data_banknote', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
+data.append({'datasetname': 'data_occupancy', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
 names = []
 
 
@@ -45,11 +51,7 @@ def import_results():
 
 
 def import_tests():
-    data = []
-    data.append({'datasetname': 'simple_separable', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
-    data.append({'datasetname': 'htru_2', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
-    data.append({'datasetname': 'data_banknote', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
-    data.append({'datasetname': 'data_occupancy', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
+    global data
     path = "results\\"
     for _file in listdir(path):
         if _file != "All.txt":

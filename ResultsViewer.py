@@ -46,11 +46,10 @@ def import_results():
 
 def import_tests():
     data = []
-    data.append({'datasetname': 'simple_separable', 'PV_tests': [], 'P_tests': []})
-    data.append({'datasetname': 'diseased_trees', 'PV_tests': [], 'P_tests': []})
-    data.append({'datasetname': 'htru_2', 'PV_tests': [], 'P_tests': []})
-    data.append({'datasetname': 'data_banknote', 'PV_tests': [], 'P_tests': []})
-    data.append({'datasetname': 'data_occupancy', 'PV_tests': [], 'P_tests': []})
+    data.append({'datasetname': 'simple_separable', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
+    data.append({'datasetname': 'htru_2', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
+    data.append({'datasetname': 'data_banknote', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
+    data.append({'datasetname': 'data_occupancy', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
     path = "results\\"
     for _file in listdir(path):
         if _file != "All.txt":
@@ -64,8 +63,8 @@ def import_tests():
                     tests.append(np.array(row, dtype=float))
                 for d in data:
                     if d['datasetname'] == header[0].strip():
-                        attribute = 'P_tests' if header[1].strip() == 'PerceptronSimple' else 'PV_tests'
-                        d[attribute] = tests
+                        attribute = header[1].strip()
+                        d['tests'][attribute] = tests
                         break
     return data
 
@@ -74,18 +73,19 @@ def plot_data(data):
     plt.figure(1)
     i = 1
     for d in data:
-        plt.subplot(2, 3, i)
+        plt.subplot(2, 2, i)
         i += 1
-        PV_data = np.array(d['PV_tests'])
-        P_data = np.array(d['P_tests'])
-        plt.plot(np.array(PV_data)[:, 0], np.array(PV_data)[:, 1], 'o-', label="Perceptron Voted")
-        plt.plot(np.array(P_data)[:, 0], np.array(P_data)[:, 1], 'o-', label="Perceptron")
-        plt.legend(loc=4)
-        plt.ylabel('Val Accurancy')
-        plt.xlabel('Ephocs')
-        plt.title(d['datasetname'], )
-        plt.grid(True)
-        plt.gca().set_ylim([0, 110])
+        results = [*d['tests']]
+        print(results)
+        for perc_name in results:
+            _data = np.array(d['tests'][perc_name])
+            plt.plot(np.array(_data)[:, 0], np.array(_data)[:, 1], 'o-', label=perc_name)
+            plt.legend(loc=4)
+            plt.ylabel('Val Accurancy')
+            plt.xlabel('Ephocs')
+            plt.title(d['datasetname'], )
+            plt.grid(True)
+            plt.gca().set_ylim([0, 110])
     plt.subplots_adjust(left=0.05, right=0.99, hspace=0.30, top=0.95, bottom=0.07)
     plt.show()
 

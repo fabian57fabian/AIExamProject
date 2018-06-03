@@ -81,7 +81,8 @@ class DatasetsFactory:
         path = "datasets\\simple_points\\simple_points.data"
         with open(path, "w+") as text_file:
             text_file.write("x, y, label\n")
-            for i in range(0, 5000):
-                text_file.write(str(randint(1, 9)) + "," + str(randint(32, 97)) + "," + "1\n")
-            for i in range(0, 5000):
-                text_file.write(str(randint(32, 97)) + "," + str(randint(1, 9)) + "," + "-1\n")
+            for k in range(0, 2500):
+                for i in range(2):
+                    text_file.write(str(randint(1, 9)) + "," + str(randint(32, 97)) + "," + "1\n")
+                for i in range(2):
+                    text_file.write(str(randint(32, 97)) + "," + str(randint(1, 9)) + "," + "-1\n")

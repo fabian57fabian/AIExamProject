@@ -8,11 +8,12 @@ class PerceptronVoted(PerceptronAbstract):
     k = 0
     trained = False
 
-    def __init__(self, R):
+    def __init__(self, attr_number):
         super().__init__()
-        self.v = [np.zeros(R)]
+        self.learningRate = 0.1
+        self.v = [np.zeros(attr_number)]
         self.c = [0]
-        self.R = R
+        self.attr_number = attr_number
 
     def predict(self, x_data):
         s = 0
@@ -25,14 +26,18 @@ class PerceptronVoted(PerceptronAbstract):
 
     def train(self, data, epochs_t=1):
         y_label = 1
-        self.v = [np.zeros(self.R)]
+        self.v = [np.zeros(self.attr_number)]
         self.c = [0]
+        c = 1
+        w = np.zeros(self.attr_number)
         for e in range(epochs_t):
             for x, y in data:
-                s = np.dot(self.v[-1], x)
-                if y_label == np.sign(s):
-                    self.c[-1] += 1
+                prediction = np.sign(np.dot(w, x))
+                if y == prediction:
+                    c += 1
                 else:
-                    self.v.append(self.v[-1] + y * x)
-                    self.c.append(1)
+                    w = w + y * x
+                    self.v.append(w)
+                    self.c.append(c)
+                    c = 1
         return self.v, self.c

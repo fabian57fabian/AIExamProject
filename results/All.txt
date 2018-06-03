@@ -1,11 +1,9 @@
 Name, Type, ephoc, Validation accuracy, Testing accuracy]
-simple_separable,PerceptronSimple,1,100.0,100.0
-simple_separable,PerceptronVoted,7,88.6,87.58888888888889
-diseased_trees,PerceptronSimple,1,94.4,94.66006772597031
-diseased_trees,PerceptronVoted,1,94.4,94.66006772597031
-htru_2,PerceptronSimple,25,97.6,97.42573085572258
-htru_2,PerceptronVoted,1,92.8,90.74446680080483
-data_banknote,PerceptronSimple,1,99.0,97.58064516129032
-data_banknote,PerceptronVoted,3,76.6,80.91397849462365
-data_occupancy,PerceptronSimple,90,97.8,96.95146818923328
-data_occupancy,PerceptronVoted,1,25.200000000000003,25.061174551386628
+simple_separable,Perceptron,20,100.0,100.0
+simple_separable,PerceptronVoted,20,100.0,100.0
+htru_2,Perceptron,20,63.2,66.8
+htru_2,PerceptronVoted,20,97.2,97.2
+data_banknote,Perceptron,20,92.4,93.2
+data_banknote,PerceptronVoted,20,96.0,95.2
+data_occupancy,Perceptron,20,70.0,72.8
+data_occupancy,PerceptronVoted,20,90.4,87.6

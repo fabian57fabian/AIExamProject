@@ -1,34 +1,44 @@
 from PerceptronVoted import PerceptronVoted
 from PerceptronSimple import PerceptronSimple
 from DatasetsFactory import DatasetsFactory
-import matplotlib.pyplot as plt
+from ResultsViewer import main as plotAll
 import time
 import random
 import numpy as np
 
 # SETTINGS vars
 dataPath = "datasets"
-to_plot = True
 plot_n = [4, 4, 1]
-use_voted = False
-epochs = [1, 3, 4, 7, 10, 14, 18, 20, 25, 30, 50, 70, 90, 100]
+epochs = [20]
 train_n = 500
-validation_n = 500
+test_n = 500
 accuracies = []
+
+perceptron_types = []
+perceptron_types.append({'number': 1, 'name': 'Perceptron', 'class': PerceptronSimple})
+perceptron_types.append({'number': 3, 'name': 'PerceptronVoted', 'class': PerceptronVoted})
+
+
+def printTime(elapsedTOTAL):
+    m, s = divmod(elapsedTOTAL, 60)
+    h, m = divmod(m, 60)
+    print("Total time: ")
+    print("%d:%02d:%02d" % (h, m, s))
 
 
 def main():
-    global use_voted
+    startTOTAL = time.time()
     datasets = load_datasets_info()
     sets = []
     sets.append(datasets[0])
     for dataset in datasets:
-        use_voted = False
-        train_dataset(dataset)
-        use_voted = True
-        train_dataset(dataset)
+        for type in perceptron_types:
+            train_dataset(dataset, type)
     save_accurancies_testing()
-    plot_data(accuracies)
+    elapsedTOTAL = time.time() - startTOTAL
+    printTime(elapsedTOTAL)
+    plotAll()
+    return 0
 
 
 def save_accurancies_testing():
@@ -39,19 +49,20 @@ def save_accurancies_testing():
             text_file.write("\n" + acc[0] + ',' + acc[1] + ',' + str(acc[2]) + ',' + str(acc[3]) + ',' + str(acc[4]))
 
 
-def train_dataset(dataset):
+def train_dataset(dataset, type):
     tests = []
-    print("\nTraining " + dataset['name'] + " with " + get_perceptron_type_str())
+    print("\nTraining " + dataset['name'] + " with " + type['name'])
     data = dataset['data'](dataPath + dataset['data_path'])
     R = len(data[0][0])
     random.Random(4).shuffle(data)
     train_data = data[0:train_n]
-    validation_data = data[train_n: train_n + validation_n]
+    validation_data = data[train_n: train_n + round(test_n / 2)]
+    test_data = data[train_n + round(test_n / 2): train_n + test_n]
     best_a = 0
     best_e = 0
     best_perc = 0
     for epoch in epochs:
-        my_perceptron = get_perceptron(R)  # create perceptron
+        my_perceptron = type['class'](R)  # create perceptron
         start = time.time()
         my_perceptron.train(train_data, epoch)  # train perceptron
         accuracy_validation = test_with(my_perceptron, validation_data)  # validate perceptron
@@ -62,25 +73,10 @@ def train_dataset(dataset):
             best_a = accuracy_validation
             best_e = epoch
             best_perc = my_perceptron
-    test_data = data[train_n * 2:max(len(data), 2000)]
     accuracy_test = test_with(best_perc, test_data)
-    save_results(tests, dataset, accuracy_test, train_n, validation_n, len(test_data))
+    save_results(tests, dataset, len(train_data), len(validation_data), len(test_data), type['name'])
     global accuracies
-    accuracies.append([dataset['name'], get_perceptron_type_str(), best_e, best_a, accuracy_test])
-
-
-def get_perceptron_type_str():
-    if use_voted:
-        return 'PerceptronVoted'
-    else:
-        return 'PerceptronSimple'
-
-
-def get_perceptron(R):
-    if use_voted:
-        return PerceptronVoted(R)
-    else:
-        return PerceptronSimple(R)
+    accuracies.append([dataset['name'], type['name'], best_e, best_a, accuracy_test])
 
 
 def test_with(my_perceptron, data):
@@ -95,17 +91,11 @@ def test_with(my_perceptron, data):
     return accurancy
 
 
-def plot_data(accuracies):
-    if to_plot:
-        plt.subplots_adjust(hspace=0.5, wspace=0.5)
-        plt.show()
-
-
-def save_results(tests, dataset, accurancy_test, train_n, validation_n, test_n):
-    path = "results\\" + get_perceptron_type_str() + ' ' + dataset['name'] + ".data"
+def save_results(tests, dataset, train_n, validation_n, test_n, name):
+    path = "results\\" + name + ' ' + dataset['name'] + ".data"
     with open(path, "w+") as text_file:
         text_file.write(
-            dataset['name'] + "," + get_perceptron_type_str() + ",[Train=" + str(train_n) + ",Validation=" + str(
+            dataset['name'] + "," + name + ",[Train=" + str(train_n) + ",Validation=" + str(
                 validation_n) + "]")
         text_file.write("\nEphocs, Accurancy val, Time")
         for test in tests:
@@ -117,9 +107,9 @@ def load_datasets_info():
     datasets.append({'name': 'simple_separable',
                      'data': DatasetsFactory.simple_points,
                      'data_path': '\\simple_points\\simple_points.data'})
-    datasets.append({'name': 'diseased_trees',
-                     'data': DatasetsFactory.diseasedTrees,
-                     'data_path': '\\wilt\\testing.csv'})
+    # datasets.append({'name': 'diseased_trees',
+    #                 'data': DatasetsFactory.diseasedTrees,
+    #                 'data_path': '\\wilt\\testing.csv'})
     datasets.append({'name': 'htru_2',
                      'data': DatasetsFactory.htru_2,
                      'data_path': '\\htru_2\\HTRU_2.arff'})

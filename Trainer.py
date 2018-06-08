@@ -1,5 +1,4 @@
-from PerceptronVoted import PerceptronVoted as PerceptronVoted2
-from PerceptronVotedWithBias import PerceptronVotedWithBias as PerceptronVoted
+from PerceptronVoted import PerceptronVoted
 from PerceptronSimple import PerceptronSimple
 from DatasetsFactory import DatasetsFactory
 from ResultsViewer import main as plotAll
@@ -21,7 +20,8 @@ epochs.append(300)
 epochs.append(350)
 epochs.append(400)
 train_n = 500
-test_n = 500
+validation_n = 250
+test_n = 250
 accuracies = []
 random_key = 4
 
@@ -81,11 +81,11 @@ def train_dataset(dataset, type):
     R = len(data[0][0])
     random.Random(random_key).shuffle(data)
     train_data = data[0:train_n]
-    validation_data = data[train_n: train_n + round(test_n / 2)]
-    test_data = data[train_n + round(test_n / 2): train_n + test_n]
-    best_a = 0
-    best_e = 0
-    best_perc = 0
+    validation_data = data[train_n: train_n + validation_n]
+    test_data = data[train_n + validation_n: train_n + validation_n + test_n]
+    last_a = 0
+    last_e = 0
+    last_perc = 0
     for epoch in epochs:
         my_perceptron = type['class'](R)  # create perceptron
         start = time.time()
@@ -94,14 +94,13 @@ def train_dataset(dataset, type):
         elapsed = time.time() - start
         tests.append([epoch, accuracy_validation, elapsed])
         print(tests[-1])
-        if best_a < accuracy_validation:
-            best_a = accuracy_validation
-            best_e = epoch
-            best_perc = my_perceptron
-    accuracy_test = test_with(best_perc, test_data)
-    save_results(tests, dataset, len(train_data), len(validation_data), len(test_data), type['name'])
+        last_a = accuracy_validation
+        last_e = epoch
+        last_perc = my_perceptron
+    accuracy_test = test_with(last_perc, test_data)
+    save_results(tests, dataset, len(train_data), len(validation_data), type['name'])
     global accuracies
-    accuracies.append([dataset['name'], type['name'], best_e, best_a, accuracy_test])
+    accuracies.append([dataset['name'], type['name'], last_e, last_a, accuracy_test])
 
 
 def test_with(my_perceptron, data):
@@ -116,7 +115,7 @@ def test_with(my_perceptron, data):
     return accurancy
 
 
-def save_results(tests, dataset, train_n, validation_n, test_n, name):
+def save_results(tests, dataset, train_n, validation_n, name):
     path = "results\\" + name + ' ' + dataset['name'] + ".data"
     with open(path, "w+") as text_file:
         text_file.write(

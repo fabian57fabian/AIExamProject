@@ -1,7 +1,7 @@
 Name, Type, ephoc, [Validation accuracy, Testing accuracy]
-simple_separable,Perceptron,1,100.0,100.0
-simple_separable,PerceptronVoted,1,100.0,100.0
-htru_2,Perceptron,10,97.2,97.2
-htru_2,PerceptronVoted,1,97.2,97.2
-data_banknote,Perceptron,60,99.6,98.4
-data_banknote,PerceptronVoted,10,99.6,98.0
+simple_separable,Perceptron,400,100.0,100.0
+simple_separable,PerceptronVoted,400,100.0,100.0
+htru_2,Perceptron,400,95.6,95.6
+htru_2,PerceptronVoted,400,96.0,96.4
+data_banknote,Perceptron,400,99.2,98.0
+data_banknote,PerceptronVoted,400,99.2,98.0

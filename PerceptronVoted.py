@@ -3,40 +3,45 @@ from PerceptronAbstract import PerceptronAbstract
 
 
 class PerceptronVoted(PerceptronAbstract):
-    v = []
-    c = []
-    k = 0
-    trained = False
 
-    def __init__(self, attr_number):
+    def __init__(self, R, learningRate=0.5):
         super().__init__()
-        self.learningRate = 0.1
-        self.v = [np.zeros(attr_number)]
-        self.c = [0]
-        self.attr_number = attr_number
+        self.learningRate = learningRate
+        self.w = np.zeros(R)
+        self.b = 1
+        self.v = []
+        self.c = []
+        self.bias = []
 
-    def predict(self, x_data):
-        s = 0
-        for c, v in zip(self.c, self.v):
-            s += c * np.sign(np.dot(v, x_data))
-        return np.sign(s)
+    def set(self):
+        self.v = []
+        self.c = []
+        self.bias = []
+
+    def train(self, data, ephocs_t=1):
+        c = 1
+        for i in range(ephocs_t):
+            for x, y in data:
+                predicted = np.sign(np.dot(self.w, x) + self.b)
+                if predicted != y:
+                    self.w = self.w + (y * x) * self.learningRate
+                    self.v.append(self.w)
+                    self.c.append(c)
+                    self.bias.append(self.b)
+                    c = 1
+                    self.b = self.b + y
+                else:
+                    c = c + 1
+        return self.w, self.b
+
+    def predict(self, x):
+        p = 0
+        i = 0
+        while i < len(self.v):
+            prediction = np.sign(np.dot(x, self.v[i]) + self.bias[i])
+            p += self.c[i] * prediction
+            i = i + 1
+        return np.sign(p)
 
     def get_weights(self):
         return self.v
-
-    def train(self, data, epochs_t=1):
-        self.v = [np.zeros(self.attr_number)]
-        self.c = [0]
-        c = 1
-        w = np.zeros(self.attr_number)
-        for e in range(epochs_t):
-            for x, y in data:
-                prediction = np.sign(np.dot(w, x))
-                if y == prediction:
-                    c += 1
-                else:
-                    w = w + y * x
-                    self.v.append(w)
-                    self.c.append(c)
-                    c = 1
-        return self.v, self.c

@@ -9,14 +9,25 @@ import numpy as np
 
 # SETTINGS vars
 dataPath = "datasets"
-epochs = [20]
+epochs = []
+for i in range(0, 101, 10):
+    epochs.append(i)
+epochs.remove(0)
+epochs.insert(0, 1)
+epochs.append(150)
+epochs.append(200)
+epochs.append(250)
+epochs.append(300)
+epochs.append(350)
+epochs.append(400)
 train_n = 500
 test_n = 500
 accuracies = []
+random_key = 4
 
 perceptron_types = []
 perceptron_types.append({'number': 1, 'name': 'Perceptron', 'class': PerceptronSimple})
-perceptron_types.append({'number': 3, 'name': 'PerceptronVoted', 'class': PerceptronVoted})
+perceptron_types.append({'number': 2, 'name': 'PerceptronVoted', 'class': PerceptronVoted})
 
 
 def load_datasets_info():
@@ -30,9 +41,6 @@ def load_datasets_info():
     datasets.append({'name': 'data_banknote',
                      'data': DatasetsFactory.data_banknote,
                      'data_path': '\\banknote_authentication\\data_banknote_authentication.txt'})
-    datasets.append({'name': 'data_occupancy',
-                     'data': DatasetsFactory.data_occupancy,
-                     'data_path': '\\occupancy_data\\datatest.txt'})
     return datasets
 
 
@@ -71,7 +79,7 @@ def train_dataset(dataset, type):
     print("\nTraining " + dataset['name'] + " with " + type['name'])
     data = dataset['data'](dataPath + dataset['data_path'])
     R = len(data[0][0])
-    random.Random(4).shuffle(data)
+    random.Random(random_key).shuffle(data)
     train_data = data[0:train_n]
     validation_data = data[train_n: train_n + round(test_n / 2)]
     test_data = data[train_n + round(test_n / 2): train_n + test_n]

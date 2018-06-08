@@ -37,20 +37,6 @@ class DatasetsFactory:
         return dataset
 
     @staticmethod
-    def data_occupancy(path):
-        dataset = []
-        with open(path, 'r') as file:
-            iter_bank = iter(csv.reader(file, delimiter=','))
-            next(iter_bank)  # saltare il primo
-            for row in iter_bank:
-                y = 1
-                if int(row[7]) == 0:
-                    y = -1
-                x = np.array(row[2:7], dtype=float)
-                dataset.append([x, y])
-        return dataset
-
-    @staticmethod
     def simple_points(path):
         dataset = []
         with open(path, 'r') as file:

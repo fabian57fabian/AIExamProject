@@ -9,7 +9,6 @@ data = []
 data.append({'datasetname': 'simple_separable', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
 data.append({'datasetname': 'htru_2', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
 data.append({'datasetname': 'data_banknote', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
-data.append({'datasetname': 'data_occupancy', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
 names = []
 
 

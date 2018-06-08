@@ -1,3 +1,0 @@
-data_occupancy,Perceptron,[Train=500,Validation=250]
-Ephocs, Accurancy val, Time
-20, 70.0, 0.0204620361328125

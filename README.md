@@ -1,12 +1,13 @@
 # AIExamProject
 Implementing the perceptron voted for AI exam
 
-Project needs a main folder placed on some drive having these folders and files:
+Project has an internal 'datasets' folder with all datasets tested and 'results' folder showing all results.
+The paper is available as RelazioneAI.pdf (languge: italian).
 
+Istruction:
+Run Trainer.py to run all training, validation and tasting for all datasets. One is lineary separable and the other are not.
+At the end a plot will be displayed to show results.
+Testing results are shown at results/All.txt
+For more info, read the related paper.
 
-Every data is given to testData method and is processed by PerceptronVoted or PerceptronSimpleclass (use_voted var).
-Assignment asks to execute PerceptronVoted on 3 datasets:
--one lineary separable
--two not lineary separable
-All 3 datasets have to have more at least 1000 instances.
-For this program i chosed 7 different datasets where only iris is really lineary separable
+If you just want to see the results, run ResultsViewer.py (only if a Train was done first)

@@ -1,30 +1,36 @@
+from scipy.io.arff import ParseArffError
+
 from PerceptronVoted import PerceptronVoted
 from PerceptronSimple import PerceptronSimple
 from DatasetsFactory import DatasetsFactory
 from ResultsViewer import main as plotAll
 import time
 import random
-import numpy as np
+import argparse
+import datetime
 
-# SETTINGS vars
+parser = argparse.ArgumentParser()
+parser.add_argument("--ephocs", type=int, default=500,
+                    help="Number of ephocs to train (default: 500)")
+parser.add_argument("--train-number", type=int, default=500,
+                    help="Number of examples for training (default: 500)")
+parser.add_argument("--validation-number", type=int, default=500,
+                    help="Number of examples for Validation (default: 500)")
+parser.add_argument("--test-number", type=int, default=1000,
+                    help="Number of examples for testing (default: 1000)")
+args = parser.parse_args()
+train_n = args.train_number
+ephocs = args.ephocs
+validation_n = args.validation_number
+test_n = args.test_number
+
+# DEFAULT SETTINGS vars
 dataPath = "datasets"
-epochs = []
-for i in range(0, 101, 10):
-    epochs.append(i)
-epochs.remove(0)
-epochs.insert(0, 1)
-epochs.append(150)
-epochs.append(200)
-epochs.append(250)
-epochs.append(300)
-epochs.append(350)
-epochs.append(400)
-train_n = 500
-validation_n = 250
-test_n = 250
-accuracies = []
 random_key = 4
 
+accuracies = []
+
+# Prceptrons
 perceptron_types = []
 perceptron_types.append({'number': 1, 'name': 'Perceptron', 'class': PerceptronSimple})
 perceptron_types.append({'number': 2, 'name': 'PerceptronVoted', 'class': PerceptronVoted})
@@ -34,13 +40,16 @@ def load_datasets_info():
     datasets = []
     datasets.append({'name': 'simple_separable',
                      'data': DatasetsFactory.simple_points,
-                     'data_path': '\\simple_points\\simple_points.data'})
+                     'data_path': '/simple_points/simple_points.data'})
     datasets.append({'name': 'htru_2',
                      'data': DatasetsFactory.htru_2,
-                     'data_path': '\\htru_2\\HTRU_2.arff'})
+                     'data_path': '/htru_2/HTRU_2.arff'})
     datasets.append({'name': 'data_banknote',
                      'data': DatasetsFactory.data_banknote,
-                     'data_path': '\\banknote_authentication\\data_banknote_authentication.txt'})
+                     'data_path': '/banknote_authentication/data_banknote_authentication.txt'})
+    datasets.append({'name': 'occupancy',
+                     'data': DatasetsFactory.occupancy,
+                     'data_path': '/Occupancy/datatraining.txt'})
     return datasets
 
 
@@ -67,7 +76,7 @@ def main():
 
 
 def save_accurancies_testing():
-    path = "results\\All.txt"
+    path = "results/All.txt"
     with open(path, "w+") as text_file:
         text_file.write("Name, Type, ephoc, [Validation accuracy, Testing accuracy]")
         for acc in accuracies:
@@ -83,24 +92,24 @@ def train_dataset(dataset, type):
     train_data = data[0:train_n]
     validation_data = data[train_n: train_n + validation_n]
     test_data = data[train_n + validation_n: train_n + validation_n + test_n]
-    last_a = 0
-    last_e = 0
-    last_perc = 0
-    for epoch in epochs:
-        my_perceptron = type['class'](R)  # create perceptron
+    my_perceptron = type['class'](R)  # create perceptron
+    accuracy_validation = 0
+    print("\nTime | Epoch | Accurancy on Validation | Time spent")
+    for epoch in range(ephocs):
         start = time.time()
-        my_perceptron.train(train_data, epoch)  # train perceptron
+        errs = my_perceptron.train(train_data, 1)  # train perceptron
         accuracy_validation = test_with(my_perceptron, validation_data)  # validate perceptron
         elapsed = time.time() - start
-        tests.append([epoch, accuracy_validation, elapsed])
-        print(tests[-1])
-        last_a = accuracy_validation
-        last_e = epoch
-        last_perc = my_perceptron
-    accuracy_test = test_with(last_perc, test_data)
+        test = [epoch + 1, accuracy_validation, elapsed]
+        tests.append(test)
+        # if (epoch+1) % delay_epoch_print == 0:
+        print("{} | E {:03} | V {:.2f} | D {:03.2f}".format(str(datetime.datetime.now()), test[0], test[1], test[2]))
+        if errs == 0:
+            break
+    accuracy_test = test_with(my_perceptron, test_data)
     save_results(tests, dataset, len(train_data), len(validation_data), type['name'])
     global accuracies
-    accuracies.append([dataset['name'], type['name'], last_e, last_a, accuracy_test])
+    accuracies.append([dataset['name'], type['name'], ephocs, accuracy_validation, accuracy_test])
 
 
 def test_with(my_perceptron, data):
@@ -116,7 +125,7 @@ def test_with(my_perceptron, data):
 
 
 def save_results(tests, dataset, train_n, validation_n, name):
-    path = "results\\" + name + ' ' + dataset['name'] + ".data"
+    path = "results/" + name + ' ' + dataset['name'] + ".data"
     with open(path, "w+") as text_file:
         text_file.write(
             dataset['name'] + "," + name + ",[Train=" + str(train_n) + ",Validation=" + str(

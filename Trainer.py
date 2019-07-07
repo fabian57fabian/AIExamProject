@@ -1,5 +1,3 @@
-from scipy.io.arff import ParseArffError
-
 from PerceptronVoted import PerceptronVoted
 from PerceptronSimple import PerceptronSimple
 from DatasetsFactory import DatasetsFactory

@@ -37,6 +37,20 @@ class DatasetsFactory:
         return dataset
 
     @staticmethod
+    def occupancy(path):
+        dataset = []
+        with open(path, 'r') as file:
+            iter_bank = iter(csv.reader(file, delimiter=','))
+            skip = True
+            for row in iter_bank:
+                y = 1
+                if int(row[7]) == 0:
+                    y = -1
+                x = np.array(row[2:7], dtype=float)
+                dataset.append([x, y])
+        return dataset
+
+    @staticmethod
     def simple_points(path):
         dataset = []
         with open(path, 'r') as file:
@@ -50,7 +64,7 @@ class DatasetsFactory:
 
     @staticmethod
     def generate_random_simple_points():
-        path = "datasets\\simple_points\\simple_points.data"
+        path = "datasets/simple_points/simple_points.data"
         with open(path, "w+") as text_file:
             text_file.write("x, y, label\n")
             for k in range(0, 2500):

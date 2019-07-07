@@ -9,6 +9,7 @@ data = []
 data.append({'datasetname': 'simple_separable', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
 data.append({'datasetname': 'htru_2', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
 data.append({'datasetname': 'data_banknote', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
+data.append({'datasetname': 'occupancy', 'val_err': 0, 'test_err': 0, 'ephoc': 0, 'tests': {}})
 names = []
 
 
@@ -29,7 +30,7 @@ def import_results():
     global names
     results = []
     names = []
-    path = "results\\All.txt"
+    path = "results/All.txt"
     with open(path, 'r') as file:
         iter_bank = iter(csv.reader(file, delimiter=','))
         # skip first two rows
@@ -51,7 +52,7 @@ def import_results():
 
 def import_tests():
     global data
-    path = "results\\"
+    path = "results/"
     for _file in listdir(path):
         if _file != "All.txt":
             with open(path + _file, 'r') as file:

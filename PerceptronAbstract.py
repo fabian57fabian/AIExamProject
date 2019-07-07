@@ -10,6 +10,10 @@ class PerceptronAbstract(ABC):
         pass
 
     @abstractmethod
+    def get_biases(self):
+        pass
+
+    @abstractmethod
     def train(self, data, ephocs=1):
         pass
 

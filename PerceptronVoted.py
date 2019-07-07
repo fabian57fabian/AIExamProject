@@ -1,5 +1,6 @@
 import numpy as np
 from PerceptronAbstract import PerceptronAbstract
+import random
 
 
 class PerceptronVoted(PerceptronAbstract):
@@ -11,28 +12,40 @@ class PerceptronVoted(PerceptronAbstract):
         self.b = 1
         self.v = []
         self.c = []
+        self.tmp_c = 1
         self.bias = []
+        self.n_err = 1
 
-    def set(self):
-        self.v = []
-        self.c = []
-        self.bias = []
+
+    def get_biases(self):
+        return self.b
+
+    def get_votes(self):
+        return self.v
 
     def train(self, data, ephocs_t=1):
-        c = 1
+        random.Random().shuffle(data)
+        c = self.tmp_c
+        w = self.w
+        b= self.b
         for i in range(ephocs_t):
+            self.n_err = 0
             for x, y in data:
-                predicted = np.sign(np.dot(self.w, x) + self.b)
+                predicted = np.sign(np.dot(w, x) + b)
                 if predicted != y:
-                    self.w = self.w + (y * x) * self.learningRate
-                    self.v.append(self.w)
+                    w = w + (y * x) * self.learningRate
+                    self.v.append(w)
                     self.c.append(c)
                     self.bias.append(self.b)
                     c = 1
-                    self.b = self.b + y
+                    b += y
+                    self.n_err += 1
                 else:
-                    c = c + 1
-        return self.w, self.b
+                    c += 1
+        self.w = w
+        self.tmp_c = c
+        self.b=b
+        return self.n_err
 
     def predict(self, x):
         p = 0
@@ -44,4 +57,4 @@ class PerceptronVoted(PerceptronAbstract):
         return np.sign(p)
 
     def get_weights(self):
-        return self.v
+        return self.w

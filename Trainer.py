@@ -6,26 +6,25 @@ import time
 import random
 import argparse
 import datetime
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--ephocs", type=int, default=500,
                     help="Number of ephocs to train (default: 500)")
-parser.add_argument("--train-number", type=int, default=500,
-                    help="Number of examples for training (default: 500)")
-parser.add_argument("--validation-number", type=int, default=500,
-                    help="Number of examples for Validation (default: 500)")
+parser.add_argument("--train-percentage", type=int, default=95,
+                    help="Percentage of examples for training in [0, 100] (default: 95)")
 parser.add_argument("--test-number", type=int, default=1000,
                     help="Number of examples for testing (default: 1000)")
 args = parser.parse_args()
-train_n = args.train_number
+train_perc = args.train_percentage
 ephocs = args.ephocs
-validation_n = args.validation_number
+validation_perc = 100 - train_perc
 test_n = args.test_number
 
 # DEFAULT SETTINGS vars
 dataPath = "datasets"
 random_key = 4
-
+BATCH_SIZE = 512
 accuracies = []
 
 # Prceptrons
@@ -36,18 +35,15 @@ perceptron_types.append({'number': 2, 'name': 'PerceptronVoted', 'class': Percep
 
 def load_datasets_info():
     datasets = []
-    datasets.append({'name': 'simple_separable',
-                     'data': DatasetsFactory.simple_points,
-                     'data_path': '/simple_points/simple_points.data'})
     datasets.append({'name': 'htru_2',
                      'data': DatasetsFactory.htru_2,
                      'data_path': '/htru_2/HTRU_2.arff'})
+    datasets.append({'name': 'simple_separable',
+                     'data': DatasetsFactory.simple_points,
+                     'data_path': '/simple_points/simple_points.data'})
     datasets.append({'name': 'data_banknote',
                      'data': DatasetsFactory.data_banknote,
                      'data_path': '/banknote_authentication/data_banknote_authentication.txt'})
-    datasets.append({'name': 'occupancy',
-                     'data': DatasetsFactory.occupancy,
-                     'data_path': '/Occupancy/datatraining.txt'})
     return datasets
 
 
@@ -85,17 +81,18 @@ def train_dataset(dataset, type):
     tests = []
     print("\nTraining " + dataset['name'] + " with " + type['name'])
     data = dataset['data'](dataPath + dataset['data_path'])
-    R = len(data[0][0])
     random.Random(random_key).shuffle(data)
+    train_n = int(len(data)*(float(train_perc)/100.0))
     train_data = data[0:train_n]
+    validation_n=int(len(data)*(float(validation_perc)/100.0))
     validation_data = data[train_n: train_n + validation_n]
-    test_data = data[train_n + validation_n: train_n + validation_n + test_n]
-    my_perceptron = type['class'](R)  # create perceptron
+    my_perceptron = type['class']()  # create perceptron
     accuracy_validation = 0
     print("\nTime | Epoch | Accurancy on Validation | Time spent")
     for epoch in range(ephocs):
         start = time.time()
-        errs = my_perceptron.train(train_data, 1)  # train perceptron
+        batch = random.choices(train_data, k=BATCH_SIZE)
+        errs = my_perceptron.train(batch, 1)  # train perceptron
         accuracy_validation = test_with(my_perceptron, validation_data)  # validate perceptron
         elapsed = time.time() - start
         test = [epoch + 1, accuracy_validation, elapsed]
@@ -104,6 +101,7 @@ def train_dataset(dataset, type):
         print("{} | E {:03} | V {:.2f} | D {:03.2f}".format(str(datetime.datetime.now()), test[0], test[1], test[2]))
         if errs == 0:
             break
+    test_data = data
     accuracy_test = test_with(my_perceptron, test_data)
     save_results(tests, dataset, len(train_data), len(validation_data), type['name'])
     global accuracies

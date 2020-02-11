@@ -5,17 +5,16 @@ import random
 
 class PerceptronVoted(PerceptronAbstract):
 
-    def __init__(self, R, learningRate=0.5):
+    def __init__(self, learningRate=0.1):
         super().__init__()
         self.learningRate = learningRate
-        self.w = np.zeros(R)
+        self.w = None
         self.b = 1
         self.v = []
         self.c = []
         self.tmp_c = 1
         self.bias = []
         self.n_err = 1
-
 
     def get_biases(self):
         return self.b
@@ -26,8 +25,8 @@ class PerceptronVoted(PerceptronAbstract):
     def train(self, data, ephocs_t=1):
         random.Random().shuffle(data)
         c = self.tmp_c
-        w = self.w
-        b= self.b
+        w = self.w = np.zeros(len(data[0][0])) if self.w is None else self.w
+        b = self.b
         for i in range(ephocs_t):
             self.n_err = 0
             for x, y in data:
@@ -44,7 +43,7 @@ class PerceptronVoted(PerceptronAbstract):
                     c += 1
         self.w = w
         self.tmp_c = c
-        self.b=b
+        self.b = b
         return self.n_err
 
     def predict(self, x):
